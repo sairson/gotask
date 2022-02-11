@@ -12,7 +12,7 @@ import (
 var pool int
 
 // InitAsync 队列初始化
-func InitAsync(num int, tick time.Duration, work int,host string,port int,pass string) error {
+func InitAsync(num int, work int,host string,port int,pass string) error {
 	err := jobs2.InitRedisPool(host,port,pass)
 	if err != nil {
 		return err
