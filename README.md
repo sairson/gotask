@@ -25,7 +25,7 @@ func AddFunc(a,b int) int {
 func main(){
 	//service.Debug(false)
 
-	err := service.InitAsync(100, 5*time.Second, 3, "192.168.248.219", 6379, "")
+	err := service.InitAsync(100, 3, "192.168.248.219", 6379, "")
 	if err != nil {
 		fmt.Println(err)
 		return
