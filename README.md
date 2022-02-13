@@ -7,7 +7,7 @@
 
 使用文档：
 ```
-go get github.com/sairson/gotask
+go get github.com/sairson/gotask/service
 ```
 example：
 
