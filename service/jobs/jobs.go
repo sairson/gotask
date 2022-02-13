@@ -15,8 +15,9 @@ import (
 
 var Jobs chan Job
 
-
 type Job struct {
+	DateTime string // 任务创建时间
+	Note 	 string // 任务备注
 	UUID     string // 任务名称
 	FuncName string
 	// FuncMethod interface{} // 函数方法
@@ -88,7 +89,7 @@ func InitAsync(num int) error {
 		if err != nil {
 			return err
 		}
-		job.FuncParams,err = interfaceTypeConversion(job.FuncParams)
+		job.FuncParams,err = InterfaceTypeConversion(job.FuncParams)
 		if err != nil {
 			return err
 		}
@@ -119,11 +120,56 @@ func StatusJob(uuid string) int {
 	return RedisGet(uuid).Status
 }
 
-func AllJobs() chan Job {
-	return Jobs
+func AllJobs() ([]Job,error) {
+	// 返回所有jobs，包括完成和未完成jobs
+	var ExistJobs []Job
+	r, err := RedisDB.Do(context.Background(), "keys", "*").Result()
+	if err != nil {
+		return []Job{},err
+	}
+	// 将没有执行完和等待中的任务重新加入到队列中,重新执行
+	for _, i := range r.([]interface{}) {
+		rs, err := RedisDB.Get(context.Background(), i.(string)).Result()
+		if err != nil {
+			return []Job{},err
+		}
+		var job Job
+		// 新建一个编码器
+		decoder := json.NewDecoder(bytes.NewReader([]byte(rs)))
+
+		err = decoder.Decode(&job)
+		if err != nil {
+			return []Job{},err
+		}
+		// 获取存储的json格式参数，以方便后续使用
+		job.FuncParams,err = InterfaceTypeConversion(job.FuncParams)
+		if err != nil {
+			return []Job{},err
+		}
+		// 将等待的或者未执行完的重新加入队列执行
+		ExistJobs = append(ExistJobs,job)
+	}
+	return ExistJobs,nil
 }
 
 // GetJob 返回一个job
 func GetJob(uuid string) Job {
 	return RedisGet(uuid)
+}
+
+
+func RemoveJob(uuid string) error {
+	// 移除还未执行的job
+	for j := range Jobs {
+		if j.UUID == uuid {
+			err := RedisDel(uuid)
+			if err != nil {
+				return err
+			}
+			break
+		}else{
+			Jobs <- j
+		}
+	}
+	return nil
 }

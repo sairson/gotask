@@ -8,7 +8,7 @@ import (
 // RegisterFunc 注册的函数，用于任务队列查找,函数调用方法用小写实现
 var RegisterFunc = map[string]interface{}{}
 
-func interfaceTypeConversion(value []map[string]interface{}) ([]map[string]interface{},error) {
+func InterfaceTypeConversion(value []map[string]interface{}) ([]map[string]interface{},error) {
 	for l,i := range value{
 		for k,v := range i {
 			switch strings.ToLower(k) {

@@ -35,6 +35,14 @@ func RedisSet(key string, job Job) error {
 	return nil
 }
 
+func RedisDel(key string) error {
+	_, err := RedisDB.Del(context.Background(),key).Result()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func RedisGet(key string) Job{
 	result, err := RedisDB.Get(context.Background(), key).Result()
 	if err != nil {

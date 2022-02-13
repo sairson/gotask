@@ -40,7 +40,7 @@ func Wait(tick time.Duration){
 	var done = make(chan bool, pool)
 	// 做死循环
 	for range time.Tick(tick) {
-		if len(jobs2.AllJobs()) == 0 {
+		if len(jobs2.Jobs) == 0 {
 			logger.Info("任务队列为空")
 			continue
 		} else {
@@ -80,8 +80,10 @@ func Wait(tick time.Duration){
 
 
 // Invoke 函数调用
-func Invoke(FuncName string, param ...map[string]interface{}) (string, error) {
+func Invoke(FuncName string, note string ,param ...map[string]interface{}) (string, error) {
 	var j jobs2.Job
+	j.DateTime = time.Now().Format("2006-01-02 15:04:05")
+	j.Note = note
 	j.FuncParams = param
 	// 将任务添加进去
 	if jobs2.RegisterFunc[FuncName] == nil {
@@ -101,10 +103,26 @@ func Register(FuncName string,FuncMethod interface{}){
 	jobs2.RegisterFunc[FuncName] = FuncMethod
 }
 
+// GetTaskStatus 通过uuid获取任务状态
 func GetTaskStatus(uuid string) int {
 	return jobs2.StatusJob(uuid)
 }
 
+// GetTaskResult 通过uuid获取任务结果
 func GetTaskResult(uuid string) []interface{} {
 	return jobs2.GetJob(uuid).FuncResult
+}
+
+// GetAllTask 获取全部任务,包括完成和未完成任务
+func GetAllTask() ([]jobs2.Job,error) {
+	return jobs2.AllJobs()
+}
+
+// GetTask 通过uuid来获取对应job
+func GetTask(uuid string) (jobs2.Job) {
+	return jobs2.GetJob(uuid)
+}
+
+func RemoveTask(uuid string)error {
+	return jobs2.RemoveJob(uuid)
 }
