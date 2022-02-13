@@ -2,7 +2,7 @@
 通过redis实现的简单任务队列（带有持久化），用于任务下发
 ![image](https://user-images.githubusercontent.com/74412075/153556999-b7489265-796b-43a0-a3d0-787457c429ac.png)
 
-目前支持`int，string,[]string,[]int,bool`类型作为函数参数
+目前支持`int，string,[]string,[]int,bool，float64，[]float64`类型作为函数参数
 
 
 使用文档：
