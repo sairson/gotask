@@ -1,13 +1,15 @@
 # gotask
-The simple task queue is stripped when the program is written to achieve the task delivery function, which is used together with Redis<br>
-利用redis实现的简单任务队列（带有持久化），用于任务下发
+通过redis实现的简单任务队列（带有持久化），用于任务下发
 ![image](https://user-images.githubusercontent.com/74412075/153556999-b7489265-796b-43a0-a3d0-787457c429ac.png)
-目前支持int，string,[]string,[]int,bool类型作为函数参数
 
-使用
+目前支持`int，string,[]string,[]int,bool`类型作为函数参数
+
+
+使用文档：
 ```
 go get github.com/sairson/gotask
 ```
+example：
 
 ```
 package main
@@ -42,4 +44,22 @@ func main(){
 	fmt.Println(send)
 	service.Wait(3 * time.Second)
 }
+```
+
+函数支持
+```
+// GetTaskStatus 通过uuid获取任务状态
+func GetTaskStatus(uuid string) int 
+
+// GetTaskResult 通过uuid获取任务结果
+func GetTaskResult(uuid string) []interface{} 
+
+// GetAllTask 获取全部任务,包括完成和未完成任务
+func GetAllTask() ([]jobs2.Job,error) 
+
+// GetTask 通过uuid来获取对应任务
+func GetTask(uuid string) jobs2.Job
+
+// RemoveTask 通过uuid来移除执行完毕或还未执行的任务
+func RemoveTask(uuid string)error
 ```
