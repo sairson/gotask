@@ -160,16 +160,24 @@ func GetJob(uuid string) Job {
 
 func RemoveJob(uuid string) error {
 	// 移除还未执行的job
-	for j := range Jobs {
-		if j.UUID == uuid {
-			err := RedisDel(uuid)
-			if err != nil {
-				return err
+	if len(Jobs) != 0 {
+		for j := range Jobs {
+			if j.UUID == uuid {
+				err := RedisDel(uuid)
+				if err != nil {
+					return err
+				}
+				break
+			}else{
+				Jobs <- j
+				continue
 			}
-			break
-		}else{
-			Jobs <- j
 		}
+	}
+
+	err := RedisDel(uuid)
+	if err != nil {
+		return err
 	}
 	return nil
 }
